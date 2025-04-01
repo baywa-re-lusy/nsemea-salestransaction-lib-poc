@@ -1,0 +1,8 @@
+.idea
+yarn.lock
+yarn-error.log
+dist
+node_modules
+**/.DS_Store
+tests/__mock__/N
+src/Typescripts/nsemea_lib
