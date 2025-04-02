@@ -1,5 +1,5 @@
 import { SalesTransaction, poTypeList } from '../Entities/SalesTransaction';
-
+import Swal from 'sweetalert2';
 export class SalesTransactionService {
   presetFieldsFromAddress(transaction: SalesTransaction): void {
     const shipAddr = transaction.shippingaddress;
@@ -20,5 +20,32 @@ export class SalesTransactionService {
     transaction.custbody_delivery_pm = shipAddr.custrecord_delivery_pm;
   }
 
+  updateShippingCost(transaction: SalesTransaction) {
+    const actualShipCosts = transaction.shippingcost;
+    const fixedShippingCosts =
+        transaction.shippingaddress.custrecord_fixedshippingcosts;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+    if (transaction.custbody_potype === poTypeList.warrantyExtension) {
+      transaction.shippingcost = 0;
+    } else if (actualShipCosts > 0) {
+      Swal.fire({
+        title: 'Confirmation',
+        html:
+            `Do you want to overwrite the shipping costs?<br/><br/>` +
+            `Actual shipping costs: ${actualShipCosts}<br/><br/>` +
+            `Address shipping costs: ${fixedShippingCosts}<br/><br/>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          transaction.shippingcost = fixedShippingCosts;
+        }
+      });
+    } else {
+      transaction.shippingcost = fixedShippingCosts;
+    }
+  }
 
 }

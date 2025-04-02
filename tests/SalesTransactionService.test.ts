@@ -6,7 +6,7 @@ import * as record from './__mock__/N/record';
 describe('AddressService', () => {
   it('should correctly preset transaction fields from the shipping address', () => {
     const service = new SalesTransactionService();
-    const transaction = new SalesTransaction(1);
+    const transaction = new SalesTransaction();
     service.presetFieldsFromAddress(transaction);
     expect(record.getSubrecord).toHaveBeenCalledTimes(1);
     expect(record.getSubrecord).toBeCalledWith({ fieldId: 'shippingaddress' });
