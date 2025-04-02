@@ -142,5 +142,20 @@ export class SalesTransaction extends TransactionBase {
   accessor shippingcost: number;
 
   @FieldTypeDecorator()
-  accessor custbody_potype: string;
+  accessor custbody_potype: number;
+
+  @FieldTypeDecorator({ fieldId: 'custbody_potype', asText: true })
+  accessor custbody_potype_name: string;
+
+  @FieldTypeDecorator()
+  accessor custbody_wms_pickdate: Nullable<Date>;
+
+  @FieldTypeDecorator()
+  accessor custbody_wms_pickdate_isDisabled: boolean;
+
+  @FieldTypeDecorator()
+  accessor custbody_internalsalesstatus: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_logisticsplanningstatus: number;
 }
