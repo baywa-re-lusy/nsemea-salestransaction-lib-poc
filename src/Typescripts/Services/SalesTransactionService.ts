@@ -1,5 +1,8 @@
-import { SalesTransaction, poTypeList } from '../Entities/SalesTransaction';
-import { Nullable } from '@nsemea_lib/Core/DataAccess/NSTypedRecord';
+import {
+  SalesTransaction,
+  poTypeList,
+  ItemSublist,
+} from '../Entities/SalesTransaction';
 import Swal from 'sweetalert2';
 
 const INTERNAL_CUSTOMER_IDS = new Set([2026, 2025, 2027]);
@@ -71,60 +74,54 @@ export class SalesTransactionService {
    * @param transaction - The sales transaction object containing order and inventory details.
    */
   disablePickDateIfNeeded(transaction: SalesTransaction) {
-    let totalQuantity: Nullable<number> = 0;
-    let totalQtyCommitted: Nullable<number> = 0;
+    const { entries } = transaction.item;
 
-    transaction.item.entries.forEach((item) => {
-      const quantity: number = item.quantity;
-      const qtyCommitted: Nullable<number> = item.quantitycommitted;
-      const commitInventoryFlag: Nullable<number> = item.commitinventory;
-
-      if (commitInventoryFlag) {
-        if (quantity && quantity > 0) {
-          totalQuantity += quantity;
+    const { totalQuantity, totalQtyCommitted } = entries.reduce(
+      (acc, item: ItemSublist) => {
+        if (item.commitinventory) {
+          acc.totalQuantity += item.quantity ?? 0;
+          acc.totalQtyCommitted += item.quantitycommitted ?? 0;
         }
-        if (qtyCommitted && qtyCommitted > 0) {
-          totalQtyCommitted += qtyCommitted;
-        }
-      }
-    });
+        return acc;
+      },
+      { totalQuantity: 0, totalQtyCommitted: 0 },
+    );
 
-    if (totalQuantity !== totalQtyCommitted) {
-      const planningStatus: number =
-        transaction.custbody_logisticsplanningstatus;
-      const poType: number = transaction.custbody_potype;
-      const icCustomers: number = transaction.entity;
+    const shouldDisablePickDate =
+      totalQuantity !== totalQtyCommitted &&
+      transaction.custbody_logisticsplanningstatus !== 1 &&
+      !INTERNAL_CUSTOMER_IDS.has(transaction.entity) &&
+      transaction.custbody_potype !== 1;
+
+    if (shouldDisablePickDate) {
       const previousInternalSalesStatus =
         transaction.custbody_internalsalesstatus;
 
-      if (
-        planningStatus !== 1 &&
-        !INTERNAL_CUSTOMER_IDS.has(icCustomers) &&
-        poType !== 1
-      ) {
-        transaction.custbody_internalsalesstatus = null;
-        transaction.custbody_wms_pickdate = null;
-        transaction.custbody_wms_pickdate_isDisabled = true;
-        if (!previousInternalSalesStatus) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Not OK to ship!',
-            html: `
-            <b>This SO is not (yet) ready to ship!</b><br><br>
-            "Internal Sales Status" and "Pick Date" have been removed. 
-            To be able to set, please ensure that the SO is:
-            <ul style="list-style: disc; text-align: left; margin-left: 30px">
-              <li>Status "Pending Fulfillment"</li>
-              <li>Saved at least once</li>
-              <li>ALL lines are committed</li>
-            </ul>`,
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#d33',
-          });
-        }
-      } else {
-        transaction.custbody_wms_pickdate_isDisabled = false;
+      transaction.custbody_internalsalesstatus = null;
+      transaction.custbody_wms_pickdate = null;
+      transaction.custbody_wms_pickdate_isDisabled = true;
+
+      if (!previousInternalSalesStatus) {
+        const htmlMessage = `
+        <b>This SO is not (yet) ready to ship!</b><br><br>
+        "Internal Sales Status" and "Pick Date" have been removed. 
+        To be able to set, please ensure that the SO is:
+        <ul style="list-style: disc; text-align: left; margin-left: 30px">
+          <li>Status "Pending Fulfillment"</li>
+          <li>Saved at least once</li>
+          <li>ALL lines are committed</li>
+        </ul>`;
+
+        Swal.fire({
+          icon: 'warning',
+          title: 'Not OK to ship!',
+          html: htmlMessage,
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#d33',
+        });
       }
+    } else if (totalQuantity !== totalQtyCommitted) {
+      transaction.custbody_wms_pickdate_isDisabled = false;
     }
   }
 }

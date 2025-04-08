@@ -1,9 +1,8 @@
 import { SalesTransactionService } from './SalesTransactionService';
 import { SalesTransaction } from '../Entities/SalesTransaction';
 
-export class SalesTransactionServiceItsy extends SalesTransactionService {
+export const SalesTransactionServiceItsy = {
   presetFieldsFromAddressItsy(transaction: SalesTransaction): void {
-    super.presetFieldsFromAddress(transaction);
     transaction.custbody_deliveryapptrequired =
       transaction.shippingaddress.custrecord_deliveryappt;
     transaction.custbody_callahead =
@@ -21,5 +20,5 @@ export class SalesTransactionServiceItsy extends SalesTransactionService {
       transaction.shippingaddress.custrecord_itsy_manned_unloading_place;
     transaction.custbody_itsy_customer_owns_a_forklift =
       transaction.shippingaddress.custrecord_itsy_customer_owns_a_forklift;
-  }
-}
+  },
+};
