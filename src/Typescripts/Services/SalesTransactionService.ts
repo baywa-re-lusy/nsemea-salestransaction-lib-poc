@@ -5,8 +5,6 @@ import {
 } from '../Entities/SalesTransaction';
 import Swal from 'sweetalert2';
 
-const INTERNAL_CUSTOMER_IDS = new Set([2026, 2025, 2027]);
-
 export class SalesTransactionService {
   /**
    * Presets specific fields in the SalesTransaction object based on the shipping address.
@@ -68,12 +66,14 @@ export class SalesTransactionService {
   }
 
   /**
-   * Disables the pick date field if the total ordered quantity does not match the committed quantity.
-   * Also, verifies the logistics planning status and customer type before disabling.
-   *
-   * @param transaction - The sales transaction object containing order and inventory details.
+   * Disables the pick date field if the transaction doesn't meet shipping readiness criteria.
+   * @param transaction - The sales transaction to evaluate and update.
+   * @param internalCustomerIds - List of internal customer IDs exempt from the check.
    */
-  disablePickDateIfNeeded(transaction: SalesTransaction) {
+  disablePickDateIfNeeded(
+    transaction: SalesTransaction,
+    internalCustomerIds: number[],
+  ) {
     const { entries } = transaction.item;
 
     const { totalQuantity, totalQtyCommitted } = entries.reduce(
@@ -90,7 +90,7 @@ export class SalesTransactionService {
     const shouldDisablePickDate =
       totalQuantity !== totalQtyCommitted &&
       transaction.custbody_logisticsplanningstatus !== 1 &&
-      !INTERNAL_CUSTOMER_IDS.has(transaction.entity) &&
+      !internalCustomerIds.includes(transaction.entity) &&
       transaction.custbody_potype !== 1;
 
     if (shouldDisablePickDate) {

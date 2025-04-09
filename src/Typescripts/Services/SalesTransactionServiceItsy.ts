@@ -1,4 +1,3 @@
-import { SalesTransactionService } from './SalesTransactionService';
 import { SalesTransaction } from '../Entities/SalesTransaction';
 
 export const SalesTransactionServiceItsy = {

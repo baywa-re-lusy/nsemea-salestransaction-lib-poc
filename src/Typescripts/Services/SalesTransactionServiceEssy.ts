@@ -35,4 +35,56 @@ export const SalesTransactionServiceEssy = {
 
     return true;
   },
+
+  /**
+   * Calculates the total weight of a transaction in kilograms.
+   * @param transaction - The sales transaction containing item entries.
+   * @param poundsToKg - Conversion factor from pounds to kilograms.
+   * @returns Total weight in kilograms.
+   */
+  calculateTotalWeightKg(
+    transaction: SalesTransaction,
+    poundsToKg: number,
+  ): number {
+    let totalWeightInKg = 0;
+
+    for (const { quantity, weightinlb } of transaction.item.entries) {
+      // Skip invalid or non-positive values to avoid unnecessary calculations
+      if (!quantity || quantity <= 0 || !weightinlb || weightinlb <= 0) {
+        continue;
+      }
+
+      // Convert weight to kilograms and multiply by quantity
+      totalWeightInKg += quantity * weightinlb * poundsToKg;
+    }
+
+    return totalWeightInKg;
+  },
+
+  /**
+   * Validates if the shipping weight exceeds the specified limit for certain shipping methods.
+   * @param transaction - The sales transaction to validate.
+   * @param shippingMethodIds - Array of shipping method IDs subject to weight restrictions.
+   * @param weightLimit - Maximum allowed weight in kilograms.
+   * @param poundsToKg - Conversion factor from pounds to kilograms.
+   */
+  validateShippingWeightLimit(
+    transaction: SalesTransaction,
+    shippingMethodIds: number[],
+    weightLimit: number,
+    poundsToKg: number,
+  ) {
+    const { shipmethod } = transaction;
+    if (shippingMethodIds.includes(shipmethod ?? 0)) {
+      const totalWeight = this.calculateTotalWeightKg(transaction, poundsToKg);
+
+      if (totalWeight >= weightLimit) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Weight Limit Exceeded',
+          text: `Total shipment weight exceeds ${weightLimit} kg. Please change the shipping method to FTL and calculate the transportation cost externally.`,
+        });
+      }
+    }
+  },
 };

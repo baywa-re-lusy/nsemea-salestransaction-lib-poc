@@ -30,7 +30,7 @@ export class ItemSublist extends NSSubListLine {
   accessor item: number;
 
   @SubListFieldTypeDecorator()
-  accessor quantity: number;
+  accessor quantity: Nullable<number>;
 
   @SubListFieldTypeDecorator()
   accessor quantitycommitted: Nullable<number>;
@@ -158,4 +158,7 @@ export class SalesTransaction extends TransactionBase {
 
   @FieldTypeDecorator()
   accessor custbody_logisticsplanningstatus: number;
+
+  @FieldTypeDecorator()
+  accessor shipmethod: Nullable<number>;
 }
