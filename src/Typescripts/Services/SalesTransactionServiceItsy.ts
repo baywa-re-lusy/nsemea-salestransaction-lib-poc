@@ -1,7 +1,9 @@
 import { SalesTransaction } from '../Entities/SalesTransaction';
 
 export const SalesTransactionServiceItsy = {
-  presetFieldsFromAddressItsy(transaction: SalesTransaction): void {
+  presetFieldsFromAddressItsy<T extends SalesTransaction>(
+    transaction: T,
+  ): void {
     transaction.custbody_deliveryapptrequired =
       transaction.shippingaddress.custrecord_deliveryappt;
     transaction.custbody_callahead =

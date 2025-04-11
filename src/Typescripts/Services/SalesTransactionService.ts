@@ -11,7 +11,9 @@ export class SalesTransactionService {
    *
    * @param transaction - The sales transaction object containing shipping details.
    */
-  presetFieldsFromAddress(transaction: SalesTransaction): void {
+  static presetFieldsFromAddress<T extends SalesTransaction>(
+    transaction: T,
+  ): void {
     const shipAddr = transaction.shippingaddress;
     transaction.custbody_shippinginstructions =
       shipAddr.custrecord_default_shipping_instructions;
@@ -37,7 +39,7 @@ export class SalesTransactionService {
    *
    * @param transaction - The sales transaction object containing shipping cost details.
    */
-  updateShippingCost(transaction: SalesTransaction) {
+  static updateShippingCost<T extends SalesTransaction>(transaction: T) {
     const actualShipCosts = transaction.shippingcost;
     const fixedShippingCosts =
       transaction.shippingaddress.custrecord_fixedshippingcosts;
@@ -70,8 +72,8 @@ export class SalesTransactionService {
    * @param transaction - The sales transaction to evaluate and update.
    * @param internalCustomerIds - List of internal customer IDs exempt from the check.
    */
-  disablePickDateIfNeeded(
-    transaction: SalesTransaction,
+  static disablePickDateIfNeeded<T extends SalesTransaction>(
+    transaction: T,
     internalCustomerIds: number[],
   ) {
     const { entries } = transaction.item;
