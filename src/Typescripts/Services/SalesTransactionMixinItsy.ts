@@ -1,9 +1,7 @@
 import { SalesTransaction } from '../Entities/SalesTransaction';
 
-export const SalesTransactionServiceItsy = {
-  presetFieldsFromAddressItsy<T extends SalesTransaction>(
-    transaction: T,
-  ): void {
+export const SalesTransactionMixinItsy = {
+  presetFieldsFromAddressItsy(transaction: SalesTransaction): void {
     transaction.custbody_deliveryapptrequired =
       transaction.shippingaddress.custrecord_deliveryappt;
     transaction.custbody_callahead =

@@ -1,10 +1,8 @@
 import { ItemSublist, SalesTransaction } from '../Entities/SalesTransaction';
 import Swal from 'sweetalert2';
 
-export const SalesTransactionServiceEssy = {
-  presetFieldsFromAddressEssy<T extends SalesTransaction>(
-    transaction: T,
-  ): void {
+export const SalesTransactionMixinEssy = {
+  presetFieldsFromAddressEssy(transaction: SalesTransaction): void {
     transaction.custbody_phonecontactonsite =
       transaction.shippingaddress.addrphone;
   },
@@ -18,9 +16,7 @@ export const SalesTransactionServiceEssy = {
    * @param transaction - The sales transaction object
    * @returns true if all item lines have valid initial quantities, false otherwise
    */
-  validateReservationQuantityEssy<T extends SalesTransaction>(
-    transaction: T,
-  ): boolean {
+  validateReservationQuantityEssy(transaction: SalesTransaction): boolean {
     const hasInvalidQty = transaction.item.entries.some((item: ItemSublist) => {
       const initialQty = item.custcol_qty_inicial;
       const quantity = item.quantity;
@@ -46,8 +42,8 @@ export const SalesTransactionServiceEssy = {
    * @param poundsToKg - Conversion factor from pounds to kilograms.
    * @returns Total weight in kilograms.
    */
-  calculateTotalWeightKg<T extends SalesTransaction>(
-    transaction: T,
+  calculateTotalWeightKg(
+    transaction: SalesTransaction,
     poundsToKg: number,
   ): number {
     let totalWeightInKg = 0;
@@ -72,8 +68,8 @@ export const SalesTransactionServiceEssy = {
    * @param weightLimit - Maximum allowed weight in kilograms.
    * @param poundsToKg - Conversion factor from pounds to kilograms.
    */
-  validateShippingWeightLimit<T extends SalesTransaction>(
-    transaction: T,
+  validateShippingWeightLimit(
+    transaction: SalesTransaction,
     shippingMethodIds: number[],
     weightLimit: number,
     poundsToKg: number,

@@ -161,4 +161,40 @@ export class SalesTransaction extends TransactionBase {
 
   @FieldTypeDecorator()
   accessor shipmethod: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_namecontactonsite: string;
+
+  @FieldTypeDecorator()
+  accessor custbody_tranfollowupstatus: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_ctk_selected_payment: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_finaldestination: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_finaldestinationcustomer: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_location: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_expectedshipdate: Nullable<Date>;
+
+  @FieldTypeDecorator()
+  accessor custbody_final_destination_details: string;
+
+  @FieldTypeDecorator()
+  accessor custbody_finaldestination_country: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_warehouseinstructions: string;
+
+  @FieldTypeDecorator()
+  accessor terms: Nullable<number>;
+
+  @FieldTypeDecorator()
+  accessor custbody_urgent_order: boolean;
 }
