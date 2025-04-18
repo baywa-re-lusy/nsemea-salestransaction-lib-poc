@@ -197,4 +197,10 @@ export class SalesTransaction extends TransactionBase {
 
   @FieldTypeDecorator()
   accessor custbody_urgent_order: boolean;
+
+  @FieldTypeDecorator()
+  accessor custbody_wms_wipflag: boolean;
+
+  @FieldTypeDecorator()
+  accessor shipaddresslist: number;
 }

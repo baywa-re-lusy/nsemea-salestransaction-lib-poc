@@ -7,70 +7,11 @@ import Swal from 'sweetalert2';
 
 export class SalesTransactionService {
   /**
-   * Presets specific fields in the SalesTransaction object based on the shipping address.
-   *
-   * @param transaction - The sales transaction object containing shipping details.
-   */
-  static presetFieldsFromAddress(transaction: SalesTransaction): void {
-    const shipAddr = transaction.shippingaddress;
-    transaction.custbody_shippinginstructions =
-      shipAddr.custrecord_default_shipping_instructions;
-    transaction.custbody_freeshipping = shipAddr.custrecord_freeshipping;
-    transaction.custbody_residentialdelivery =
-      shipAddr.custrecord_residentialdelivery;
-    transaction.custbody_smalltruckrequired = shipAddr.custrecord_smalltruck;
-    transaction.custbody_truckwforkliftreq =
-      shipAddr.custrecord_truckwforkliftreq;
-    transaction.custbody_craneonsite = shipAddr.custrecord_craneonsite;
-    transaction.custbody_timedeliveryfrom =
-      shipAddr.custrecord_timedeliveryfrom;
-    transaction.custbody_timedeliverytill =
-      shipAddr.custrecord_timedeliverytill;
-    transaction.custbody_delivery_am = shipAddr.custrecord_delivery_am;
-    transaction.custbody_delivery_pm = shipAddr.custrecord_delivery_pm;
-  }
-
-  /**
-   * Updates the shipping cost of a transaction based on predefined conditions.
-   * If the purchase order type is 'warrantyExtension', the cost is set to zero.
-   * Otherwise, the user is prompted to confirm if they want to override the shipping cost.
-   *
-   * @param transaction - The sales transaction object containing shipping cost details.
-   */
-  static updateShippingCost(transaction: SalesTransaction) {
-    const actualShipCosts = transaction.shippingcost;
-    const fixedShippingCosts =
-      transaction.shippingaddress.custrecord_fixedshippingcosts;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-    if (transaction.custbody_potype_name === poTypeList.warrantyExtension) {
-      transaction.shippingcost = 0;
-    } else if (actualShipCosts > 0) {
-      Swal.fire({
-        title: 'Confirmation',
-        html:
-          `Do you want to overwrite the shipping costs?<br/><br/>` +
-          `Actual shipping costs: ${actualShipCosts}<br/><br/>` +
-          `Address shipping costs: ${fixedShippingCosts}<br/><br/>`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          transaction.shippingcost = fixedShippingCosts;
-        }
-      });
-    } else {
-      transaction.shippingcost = fixedShippingCosts;
-    }
-  }
-
-  /**
    * Disables the pick date field if the transaction doesn't meet shipping readiness criteria.
    * @param transaction - The sales transaction to evaluate and update.
    * @param internalCustomerIds - List of internal customer IDs exempt from the check.
    */
-  static disablePickDateIfNeeded(
+  disablePickDateIfNeeded(
     transaction: SalesTransaction,
     internalCustomerIds: number[],
   ) {
@@ -123,5 +64,64 @@ export class SalesTransactionService {
     } else if (totalQuantity !== totalQtyCommitted) {
       transaction.custbody_wms_pickdate_isDisabled = false;
     }
+  }
+
+  /**
+   * Updates the shipping cost of a transaction based on predefined conditions.
+   * If the purchase order type is 'warrantyExtension', the cost is set to zero.
+   * Otherwise, the user is prompted to confirm if they want to override the shipping cost.
+   *
+   * @param transaction - The sales transaction object containing shipping cost details.
+   */
+  updateShippingCost(transaction: SalesTransaction) {
+    const actualShipCosts = transaction.shippingcost;
+    const fixedShippingCosts =
+      transaction.shippingaddress.custrecord_fixedshippingcosts;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+    if (transaction.custbody_potype_name === poTypeList.warrantyExtension) {
+      transaction.shippingcost = 0;
+    } else if (actualShipCosts > 0) {
+      Swal.fire({
+        title: 'Confirmation',
+        html:
+          `Do you want to overwrite the shipping costs?<br/><br/>` +
+          `Actual shipping costs: ${actualShipCosts}<br/><br/>` +
+          `Address shipping costs: ${fixedShippingCosts}<br/><br/>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          transaction.shippingcost = fixedShippingCosts;
+        }
+      });
+    } else {
+      transaction.shippingcost = fixedShippingCosts;
+    }
+  }
+
+  /**
+   * Presets specific fields in the SalesTransaction object based on the shipping address.
+   *
+   * @param transaction - The sales transaction object containing shipping details.
+   */
+  presetFieldsFromAddress(transaction: SalesTransaction): void {
+    const shipAddr = transaction.shippingaddress;
+    transaction.custbody_shippinginstructions =
+      shipAddr.custrecord_default_shipping_instructions;
+    transaction.custbody_freeshipping = shipAddr.custrecord_freeshipping;
+    transaction.custbody_residentialdelivery =
+      shipAddr.custrecord_residentialdelivery;
+    transaction.custbody_smalltruckrequired = shipAddr.custrecord_smalltruck;
+    transaction.custbody_truckwforkliftreq =
+      shipAddr.custrecord_truckwforkliftreq;
+    transaction.custbody_craneonsite = shipAddr.custrecord_craneonsite;
+    transaction.custbody_timedeliveryfrom =
+      shipAddr.custrecord_timedeliveryfrom;
+    transaction.custbody_timedeliverytill =
+      shipAddr.custrecord_timedeliverytill;
+    transaction.custbody_delivery_am = shipAddr.custrecord_delivery_am;
+    transaction.custbody_delivery_pm = shipAddr.custrecord_delivery_pm;
   }
 }
